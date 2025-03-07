@@ -1,6 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Identity.Client;
-<<<<<<< HEAD
 using System.Net.Http.Headers;
 using System.Text.Json;
 using AzureIntegration.Services;
@@ -28,24 +27,6 @@ namespace AzureIntegration.Controllers
         {
             var resources = await GetResourcesAsync(name);
             return View(resources);
-=======
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Threading.Tasks;
-using System.Text.Json;
-using AzureIntegration.Services;
-using System.Collections.Generic;
-
-namespace AzureIntegration.Controllers
-{
-    public class ResourceGroupsController : Controller
-    {
-        private readonly IConfiguration _configuration;
-
-        public ResourceGroupsController(IConfiguration configuration)
-        {
-            _configuration = configuration;
->>>>>>> 058c5a172ca0442c36f64d4dccc359928241967c
         }
 
         public async Task<IActionResult> Index()
@@ -56,7 +37,6 @@ namespace AzureIntegration.Controllers
 
         private async Task<List<ResourceGroup>> GetResourceGroupsAsync()
         {
-<<<<<<< HEAD
             var httpClient = _httpClientFactory.CreateClient("AzureManage");
 
             var httpResponseMessage = await httpClient.GetAsync(
@@ -111,43 +91,3 @@ namespace AzureIntegration.Controllers
     }
 }
 
-=======
-            var clientId = _configuration["AzureAd:ClientId"];
-            var clientSecret = _configuration["AzureAd:ClientSecret"];
-            var tenantId = _configuration["AzureAd:TenantId"];
-            var subscriptionId = _configuration["AzureAd:SubscriptionId"];
-
-            IConfidentialClientApplication app = ConfidentialClientApplicationBuilder.Create(clientId)
-                .WithClientSecret(clientSecret)
-                .WithAuthority(new Uri($"https://login.microsoftonline.com/{tenantId}"))
-                .Build();
-
-            string[] scopes = new string[] { "https://management.azure.com/.default" };
-            var authResult = await app.AcquireTokenForClient(scopes).ExecuteAsync();
-
-            using (var client = new HttpClient())
-            {
-                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", authResult.AccessToken);
-                var response = await client.GetAsync($"https://management.azure.com/subscriptions/{subscriptionId}/resourcegroups?api-version=2021-04-01");
-                response.EnsureSuccessStatusCode();
-
-                var content = await response.Content.ReadAsStringAsync();
-                var jsonDocument = JsonDocument.Parse(content);
-
-                var resourceGroups = new List<ResourceGroup>();
-                if (jsonDocument.RootElement.TryGetProperty("value", out JsonElement resourceGroupsElement))
-                {
-                    foreach (var resourceGroup in resourceGroupsElement.EnumerateArray())
-                    {
-                        var name = resourceGroup.GetProperty("name").GetString();
-                        var location = resourceGroup.GetProperty("location").GetString();
-                        resourceGroups.Add(new ResourceGroup { Name = name, Location = location });
-                    }
-                }
-
-                return resourceGroups;
-            }
-        }
-    }
-}
->>>>>>> 058c5a172ca0442c36f64d4dccc359928241967c
