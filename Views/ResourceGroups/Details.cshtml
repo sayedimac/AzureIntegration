@@ -1,0 +1,10 @@
+@model List<AzureIntegration.Services.AzureResource>
+
+<h2>Resources in Resource Group: @ViewData["resourcegroup"]</h2>
+
+<ul>
+    @foreach (var resource in Model)
+    {
+        <li>@resource.Name (@resource.Type)</li>
+    }
+</ul>

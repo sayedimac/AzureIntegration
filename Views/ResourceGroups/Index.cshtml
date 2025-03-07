@@ -1,0 +1,19 @@
+﻿@model List<AzureIntegration.Services.ResourceGroup>
+
+<h2>Resource Groups</h2>
+<ol>
+@if (Model != null && Model.Count > 0)
+{
+    foreach (var resourceGroup in Model)
+    {
+            <li><a href="@Url.Action("Details", "ResourceGroups", new { name = resourceGroup.Name })">
+                    @resourceGroup.Name </a>  (@resourceGroup.Location)
+            </li>
+    }
+}
+else
+{
+        <li>
+            No resource groups found.
+        </li>
+}
