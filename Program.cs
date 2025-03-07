@@ -16,13 +16,13 @@ using System.Net.Http.Headers; // Add this line
 var builder = WebApplication.CreateBuilder(args);
 
 IConfiguration _configuration = new ConfigurationBuilder()
-    .AddJsonFile("appsettings.json")
+    .AddEnvironmentVariables()
     .Build();
 
-var clientId = _configuration["AzureAd:ClientId"];
-var clientSecret = _configuration["AzureAd:ClientSecret"];
-var tenantId = _configuration["AzureAd:TenantId"];
-var subscriptionId = _configuration["AzureAd:SubscriptionId"];
+var clientId = _configuration["ClientId"];
+var clientSecret = _configuration["ClientSecret"];
+var tenantId = _configuration["TenantId"];
+var subscriptionId = _configuration["SubscriptionId"];
 
 IConfidentialClientApplication authapp = ConfidentialClientApplicationBuilder.Create(clientId)
     .WithClientSecret(clientSecret)
