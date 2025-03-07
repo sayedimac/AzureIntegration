@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+<<<<<<< HEAD
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Identity.Client;
 using System.Net.Http;
@@ -39,6 +40,11 @@ builder.Services.AddHttpClient("AzureManage", httpClient =>
     httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", authResult.Result.AccessToken);
 });
 
+=======
+
+var builder = WebApplication.CreateBuilder(args);
+
+>>>>>>> 058c5a172ca0442c36f64d4dccc359928241967c
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
@@ -51,6 +57,7 @@ builder.Services.AddHttpClient();
 
 // Register the configuration
 builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
+<<<<<<< HEAD
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>
 {
@@ -58,6 +65,9 @@ builder.Services.AddSession(options =>
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
 });
+=======
+
+>>>>>>> 058c5a172ca0442c36f64d4dccc359928241967c
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -69,8 +79,14 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+<<<<<<< HEAD
 app.UseSession();
 app.UseRouting();
+=======
+
+app.UseRouting();
+
+>>>>>>> 058c5a172ca0442c36f64d4dccc359928241967c
 app.UseAuthorization();
 
 app.MapControllerRoute(
