@@ -4,8 +4,9 @@
 name: dotnet
 
 on:
+  workflow_dispatch:
   push:
-    branches: [ "master" ]
+    branches: [ "dev" ]
   pull_request:
     branches: [ "master" ]
 
