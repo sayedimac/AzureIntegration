@@ -1,6 +1,4 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Identity.Client;
-using System.Net.Http.Headers;
 using System.Text.Json;
 using AzureIntegration.Services;
 
@@ -12,11 +10,6 @@ namespace AzureIntegration.Controllers
     {
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly IConfiguration _configuration;
-        private string clientId;
-        private string clientSecret;
-        private string tenantId;
-        private string subscriptionId;
-
         public ResourceGroupsController(IHttpClientFactory httpClientFactory, IConfiguration configuration)
         {
             _httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
@@ -37,7 +30,7 @@ namespace AzureIntegration.Controllers
 
         private async Task<List<ResourceGroup>> GetResourceGroupsAsync()
         {
-            var httpClient = _httpClientFactory.CreateClient("AzureManage");
+            var httpClient = _httpClientFactory.CreateClient("AzureServices");
 
             var httpResponseMessage = await httpClient.GetAsync(
             $"resourcegroups?api-version=2021-04-01");
@@ -55,8 +48,8 @@ namespace AzureIntegration.Controllers
                     var location = resourceGroup.GetProperty("location").GetString();
                     resourceGroups.Add(new ResourceGroup
                     {
-                        Name = name,
-                        Location = location
+                        Name = name ?? string.Empty,
+                        Location = location ?? string.Empty
                     });
                 }
             }
@@ -67,7 +60,7 @@ namespace AzureIntegration.Controllers
         private async Task<List<AzureResource>> GetResourcesAsync(string name)
         {
 
-            var httpClient = _httpClientFactory.CreateClient("AzureManage");
+            var httpClient = _httpClientFactory.CreateClient("AzureServices");
 
             var httpResponseMessage = await httpClient.GetAsync(
             $"resourceGroups/{name}/resources?api-version=2021-04-01");
