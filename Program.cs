@@ -18,21 +18,17 @@ IConfidentialClientApplication authapp = ConfidentialClientApplicationBuilder.Cr
     .Build();
 
 string[] scopes = ["https://management.azure.com/.default"];
-var authResult = authapp.AcquireTokenForClient(scopes).ExecuteAsync();
+var authResult = await authapp.AcquireTokenForClient(scopes).ExecuteAsync();
 
 
 builder.Services.AddHttpClient("AzureServices", httpClient =>
 {
     httpClient.BaseAddress = new Uri($"https://management.azure.com/subscriptions/{subscriptionId}/");
-    httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", authResult.Result.AccessToken);
+    httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", authResult.AccessToken);
 });
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
-
-// Add configuration
-builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-                     .AddEnvironmentVariables();
 
 // Register the HTTP client
 builder.Services.AddHttpClient();
@@ -46,6 +42,7 @@ builder.Services.AddSession(options =>
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
 });
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -65,4 +62,4 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
-app.Run();
+await app.RunAsync();
