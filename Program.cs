@@ -4,31 +4,35 @@ using System.Net.Http.Headers; // Add this line
 var builder = WebApplication.CreateBuilder(args);
 
 IConfiguration _configuration = new ConfigurationBuilder()
-    .AddEnvironmentVariables()
-    .Build();
+.AddEnvironmentVariables()
+.Build();
 
-var clientId = _configuration["ClientId"] ?? throw new ArgumentNullException("ClientId");
-var clientSecret = _configuration["ClientSecret"] ?? throw new ArgumentNullException("ClientSecret");
-var tenantId = _configuration["TenantId"] ?? throw new ArgumentNullException("TenantId");
+var clientId = _configuration["ClientId"];
+var clientSecret = _configuration["ClientSecret"];
+var tenantId = _configuration["TenantId"];
 var subscriptionId = _configuration["SubscriptionId"];
 
 IConfidentialClientApplication authapp = ConfidentialClientApplicationBuilder.Create(clientId)
-    .WithClientSecret(clientSecret)
-    .WithAuthority(new Uri($"https://login.microsoftonline.com/{tenantId}"))
-    .Build();
+.WithClientSecret(clientSecret)
+.WithAuthority(new Uri($"https://login.microsoftonline.com/{tenantId}"))
+.Build();
 
 string[] scopes = ["https://management.azure.com/.default"];
-var authResult = await authapp.AcquireTokenForClient(scopes).ExecuteAsync();
+var authResult = authapp.AcquireTokenForClient(scopes).ExecuteAsync();
 
 
 builder.Services.AddHttpClient("AzureServices", httpClient =>
 {
     httpClient.BaseAddress = new Uri($"https://management.azure.com/subscriptions/{subscriptionId}/");
-    httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", authResult.AccessToken);
+    httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", authResult.Result.AccessToken);
 });
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+// Add configuration
+builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+.AddEnvironmentVariables();
 
 // Register the HTTP client
 builder.Services.AddHttpClient();
@@ -42,7 +46,6 @@ builder.Services.AddSession(options =>
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
 });
-
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -59,7 +62,7 @@ app.UseRouting();
 app.UseAuthorization();
 
 app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+name: "default",
+pattern: "{controller=Home}/{action=Index}/{id?}");
 
-await app.RunAsync();
+app.Run();
