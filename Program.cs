@@ -1,16 +1,4 @@
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Identity.Client;
-using System.Net.Http;
-using System.Threading.Tasks;
-using System.Text.Json;
-using AzureIntegration.Services;
-using System.Collections.Generic;
-using Microsoft.Extensions.Configuration;
-using Microsoft.AspNetCore.Builder; // Add this line
-using Microsoft.AspNetCore.Http; // Add this line
-using Microsoft.Net.Http.Headers; // Add this line
 using System.Net.Http.Headers; // Add this line
 
 var builder = WebApplication.CreateBuilder(args);
@@ -19,9 +7,9 @@ IConfiguration _configuration = new ConfigurationBuilder()
     .AddEnvironmentVariables()
     .Build();
 
-var clientId = _configuration["ClientId"];
-var clientSecret = _configuration["ClientSecret"];
-var tenantId = _configuration["TenantId"];
+var clientId = _configuration["ClientId"] ?? throw new ArgumentNullException("ClientId");
+var clientSecret = _configuration["ClientSecret"] ?? throw new ArgumentNullException("ClientSecret");
+var tenantId = _configuration["TenantId"] ?? throw new ArgumentNullException("TenantId");
 var subscriptionId = _configuration["SubscriptionId"];
 
 IConfidentialClientApplication authapp = ConfidentialClientApplicationBuilder.Create(clientId)
@@ -33,7 +21,7 @@ string[] scopes = ["https://management.azure.com/.default"];
 var authResult = authapp.AcquireTokenForClient(scopes).ExecuteAsync();
 
 
-builder.Services.AddHttpClient("AzureManage", httpClient =>
+builder.Services.AddHttpClient("AzureServices", httpClient =>
 {
     httpClient.BaseAddress = new Uri($"https://management.azure.com/subscriptions/{subscriptionId}/");
     httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", authResult.Result.AccessToken);
