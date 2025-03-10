@@ -4,6 +4,7 @@ using System.Net.Http.Headers; // Add this line
 var builder = WebApplication.CreateBuilder(args);
 
 IConfiguration _configuration = new ConfigurationBuilder()
+.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
     .AddEnvironmentVariables()
     .Build();
 
