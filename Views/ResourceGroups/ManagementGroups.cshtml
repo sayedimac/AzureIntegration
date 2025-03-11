@@ -1,0 +1,10 @@
+@model List<AzureIntegration.Services.AzureManagementGroup>
+
+<h2>Management groups:</h2>
+
+<ul>
+    @foreach (var group in Model)
+    {
+        <li>@group.Name (@group.Type / @group.Id)</li>
+    }
+</ul>

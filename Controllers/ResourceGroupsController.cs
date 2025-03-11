@@ -22,6 +22,12 @@ namespace AzureIntegration.Controllers
             return View(resources);
         }
 
+        public async Task<IActionResult> ManagementGroups()
+        {
+            var azureManagementGroups = await GetAzureManagementGroups();
+            return View(azureManagementGroups);
+        }
+
         public async Task<IActionResult> Index()
         {
             var resourceGroups = await GetResourceGroupsAsync();
@@ -80,6 +86,36 @@ namespace AzureIntegration.Controllers
                 }
             }
             return theResources;
+        }
+
+        private async Task<List<AzureManagementGroup>> GetAzureManagementGroups()
+        {
+            var httpClient = _httpClientFactory.CreateClient("AzureServices");
+
+            var httpResponseMessage = await httpClient.GetAsync(
+            $"managementgroups?api-version=2021-04-01");
+
+            var jsonDocument = JsonDocument.Parse(httpResponseMessage.Content.ReadAsStringAsync().Result);
+
+            var azureManagementGroups = new List<AzureManagementGroup>();
+
+            if (jsonDocument.RootElement.TryGetProperty("value", out JsonElement managementGroupsElement))
+            {
+                foreach (var managementGroup in managementGroupsElement.EnumerateArray())
+                {
+                    var name = managementGroup.GetProperty("name").GetString();
+                    var id = managementGroup.GetProperty("id").GetString();
+                    var type = managementGroup.GetProperty("type").GetString();
+                    azureManagementGroups.Add(new AzureManagementGroup
+                    {
+                        Name = name ?? string.Empty,
+                        Type = type ?? string.Empty,
+                        Id = id ?? string.Empty,
+
+                    });
+                }
+            }
+            return azureManagementGroups;
         }
     }
 }

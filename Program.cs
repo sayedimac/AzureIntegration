@@ -4,8 +4,11 @@ using System.Net.Http.Headers; // Add this line
 var builder = WebApplication.CreateBuilder(args);
 
 IConfiguration _configuration = new ConfigurationBuilder()
-.AddEnvironmentVariables()
-.Build();
+
+.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+    .AddEnvironmentVariables()
+    .Build();
+
 
 var clientId = _configuration["ClientId"];
 var clientSecret = _configuration["ClientSecret"];
