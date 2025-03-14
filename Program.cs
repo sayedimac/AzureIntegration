@@ -1,6 +1,6 @@
 using Microsoft.Identity.Client;
 using System.Net.Http.Headers; // Add this line
-
+using AzureIntegration.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 IConfiguration _configuration = new ConfigurationBuilder()
@@ -26,7 +26,7 @@ var authResult = authapp.AcquireTokenForClient(scopes).ExecuteAsync();
 
 builder.Services.AddHttpClient("AzureServices", httpClient =>
 {
-    httpClient.BaseAddress = new Uri($"https://management.azure.com/subscriptions/{subscriptionId}/");
+    httpClient.BaseAddress = new Uri($"https://management.azure.com/");
     httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", authResult.Result.AccessToken);
 });
 
@@ -40,6 +40,7 @@ builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnC
 // Register the HTTP client
 builder.Services.AddHttpClient();
 
+builder.Services.AddSingleton(new Subscription(subscriptionId));
 // Register the configuration
 builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
 builder.Services.AddDistributedMemoryCache();

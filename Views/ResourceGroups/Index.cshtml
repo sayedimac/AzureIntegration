@@ -7,7 +7,7 @@
     foreach (var resourceGroup in Model)
     {
             <li><a href="@Url.Action("Details", "ResourceGroups", new { name = resourceGroup.Name })">
-                    @resourceGroup.Name </a>  (@resourceGroup.Location)
+                    @resourceGroup.Name </a> - @resourceGroup.Location
             </li>
     }
 }

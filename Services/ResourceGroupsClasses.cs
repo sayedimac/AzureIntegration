@@ -30,4 +30,19 @@
             }
         }
     }
+    public class Subscription
+    {
+        public string SubscriptionId { get; set; }
+        public Subscription(string subscriptionId)
+        {
+            SubscriptionId = subscriptionId;
+        }
+        public string GetSubscriptionId
+        {
+            get
+            {
+                return SubscriptionId;
+            }
+        }
+    }
 }
