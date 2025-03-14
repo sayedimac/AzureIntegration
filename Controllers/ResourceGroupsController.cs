@@ -1,15 +1,18 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
 using AzureIntegration.Services;
+using Microsoft.VisualBasic;
+using System.Runtime.CompilerServices;
+
 
 namespace AzureIntegration.Controllers
 {
 
     public class ResourceGroupsController : Controller
-
     {
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly IConfiguration _configuration;
+
         public ResourceGroupsController(IHttpClientFactory httpClientFactory, IConfiguration configuration)
         {
             _httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
@@ -37,9 +40,9 @@ namespace AzureIntegration.Controllers
         private async Task<List<ResourceGroup>> GetResourceGroupsAsync()
         {
             var httpClient = _httpClientFactory.CreateClient("AzureServices");
-
+            var subscriptionId = _configuration["SubscriptionId"];
             var httpResponseMessage = await httpClient.GetAsync(
-            $"resourcegroups?api-version=2021-04-01");
+            $"subscriptions/{subscriptionId}/resourcegroups?api-version=2021-04-01");
 
 
             var jsonDocument = JsonDocument.Parse(httpResponseMessage.Content.ReadAsStringAsync().Result);
@@ -67,9 +70,10 @@ namespace AzureIntegration.Controllers
         {
 
             var httpClient = _httpClientFactory.CreateClient("AzureServices");
+            var subscriptionId = _configuration["SubscriptionId"];
 
             var httpResponseMessage = await httpClient.GetAsync(
-            $"resourceGroups/{name}/resources?api-version=2021-04-01");
+            $"subscriptions/{subscriptionId}/resourceGroups/{name}/resources?api-version=2021-04-01");
 
             var jsonDocument = JsonDocument.Parse(httpResponseMessage.Content.ReadAsStringAsync().Result);
 
@@ -93,7 +97,7 @@ namespace AzureIntegration.Controllers
             var httpClient = _httpClientFactory.CreateClient("AzureServices");
 
             var httpResponseMessage = await httpClient.GetAsync(
-            $"managementgroups?api-version=2021-04-01");
+            $"providers/Microsoft.Management/managementGroups?api-version=2020-05-01");
 
             var jsonDocument = JsonDocument.Parse(httpResponseMessage.Content.ReadAsStringAsync().Result);
 
@@ -103,7 +107,8 @@ namespace AzureIntegration.Controllers
             {
                 foreach (var managementGroup in managementGroupsElement.EnumerateArray())
                 {
-                    var name = managementGroup.GetProperty("name").GetString();
+                    var name = managementGroup.GetProperty("properties").GetProperty("displayName").GetString();
+                    //var name = managementGroup. .GetProperty("displayName").GetString();
                     var id = managementGroup.GetProperty("id").GetString();
                     var type = managementGroup.GetProperty("type").GetString();
                     azureManagementGroups.Add(new AzureManagementGroup
@@ -117,6 +122,7 @@ namespace AzureIntegration.Controllers
             }
             return azureManagementGroups;
         }
+
     }
 }
 
