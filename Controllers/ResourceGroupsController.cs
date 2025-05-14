@@ -108,7 +108,6 @@ namespace AzureIntegration.Controllers
                 foreach (var managementGroup in managementGroupsElement.EnumerateArray())
                 {
                     var name = managementGroup.GetProperty("properties").GetProperty("displayName").GetString();
-                    //var name = managementGroup. .GetProperty("displayName").GetString();
                     var id = managementGroup.GetProperty("id").GetString();
                     var type = managementGroup.GetProperty("type").GetString();
                     azureManagementGroups.Add(new AzureManagementGroup

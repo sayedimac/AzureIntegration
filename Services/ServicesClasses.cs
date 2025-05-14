@@ -30,6 +30,14 @@
             }
         }
     }
+
+    public class AzureMapsWeatherForecast{
+        public string? Date { get; set; }
+        public string? TemperatureC { get; set; }
+        public string? Summary { get; set; }
+    }
+
+
     public class Subscription
     {
         public string SubscriptionId { get; set; }
