@@ -40,7 +40,7 @@ builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnC
 // Register the HTTP client
 builder.Services.AddHttpClient();
 
-builder.Services.AddSingleton(new Subscription(subscriptionId));
+builder.Services.AddSingleton(new Subscription(subscriptionId ?? throw new InvalidOperationException("SubscriptionId is required")));
 // Register the configuration
 builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
 builder.Services.AddDistributedMemoryCache();
