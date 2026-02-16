@@ -3,8 +3,18 @@
 <h2>Management groups:</h2>
 
 <ul>
-    @foreach (var group in Model)
-    {
-        <li>@group.Name - @group.Type</li>
+    @if (Model != null && Model.Count > 0)
+{
+        foreach (var managementGroup in Model)
+        {
+            <li><a href="@Url.Action("Details", "ManagementGroups", new { name = managementGroup.Name })">
+                    @managementGroup.Name </a> - @managementGroup.Type
+            </li>
+        }
     }
+    else
+    {
+        <li>No management groups found.</li>
+    }
+
 </ul>

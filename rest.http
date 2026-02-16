@@ -1,0 +1,1 @@
+GET https://atlas.microsoft.com/weather/currentConditions/json?subscription-key={{map-key}}&api-version=1.1&query=47.641268,-122.125679
